@@ -43,14 +43,19 @@
          // unknown compiler version; disable OpenMP to be on the safe side
 #        undef HAVE_OMP
 #     else
-         // __OPENCC_PATCHLEVEL__ can be empty; redefine it to 0
-#        if !(__OPENCC_PATCHLEVEL__ + 0)
-#           undef __OPENCC_PATCHLEVEL__
-#           define __OPENCC_PATCHLEVEL__ 0
-#        endif
-         // disable OpenMP, if compiler version is less than 4.2.4
-#        if __OPENCC__ < 4 || (__OPENCC__ == 4 && (__OPENCC_MINOR__ < 2 || (__OPENCC_MINOR__ == 2 && __OPENCC_PATCHLEVEL__ < 4)))
-#           undef HAVE_OMP
+         // __OPENCC_PATCHLEVEL__ may be x.z, but it is only known to happen for
+         // versions >=4.5, though we need only to catch versions < 4.3 to disable
+         // OpenMP
+#        if __OPENCC__ < 4 || (__OPENCC__ == 4 && __OPENCC_MINOR__ < 3)
+            // __OPENCC_PATCHLEVEL__ can be empty; redefine it to 0
+#           if !(__OPENCC_PATCHLEVEL__ + 0)
+#              undef __OPENCC_PATCHLEVEL__
+#              define __OPENCC_PATCHLEVEL__ 0
+#           endif
+            // disable OpenMP, if compiler version is less than 4.2.4
+#           if __OPENCC__ < 4 || (__OPENCC__ == 4 && (__OPENCC_MINOR__ < 2 || (__OPENCC_MINOR__ == 2 && __OPENCC_PATCHLEVEL__ < 4)))
+#              undef HAVE_OMP
+#           endif
 #        endif
 #     endif
 
